@@ -181,32 +181,37 @@
                 this.uploadImage(imageData);
             }
 
+            
             uploadImage(imageData) {
-                // Remove the data URL prefix to get just the base64 data
-                const base64Data = imageData.replace(/^data:image\/jpeg;base64,/, '');
-                console.debug(base64Data);
-                fetch('save-image.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ image: base64Data })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        this.message.textContent = `Photo saved successfully: ${data.filename}`;
-                        this.message.style.color = '#4CAF50';
-                    } else {
-                        this.message.textContent = `Error saving photo: ${data.error}`;
-                        this.message.style.color = 'red';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error uploading image:', error);
-                    this.message.textContent = `Error uploading image: ${error.message}`;
-                    this.message.style.color = 'red';
-                });
+                // Remove the data URL prefix to get just the base64 data
+                const base64Data = imageData.replace(/^data:image\/jpeg;base64,/, '');
+                console.debug(imageData);
+
+                fetch('save_image.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/octet-stream' // Change the content type to octet-stream
+                    },
+                    body: base64Data // Send the base64 data directly
+                })
+                .then(response => {
+                const jsonnval = response.json();
+                console.log(jsonnval);
+            })
+                .then(data => {
+                    if (data.success) {
+                        this.message.textContent = `Photo saved successfully: ${data.filename}`;
+                        this.message.style.color = '#4CAF50';
+                    } else {
+                        this.message.textContent = `Error saving photo: ${data.error}`;
+                        this.message.style.color = 'red';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error uploading image:', error);
+                    this.message.textContent = `Error uploading image: ${error.message}`;
+                    this.message.style.color = 'red';
+                });
             }
         }
 

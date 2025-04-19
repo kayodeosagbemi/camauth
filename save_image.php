@@ -3,11 +3,11 @@
 header('Content-Type: application/json');
 
 // Get the JSON data from the request
-$json_data = file_get_contents('php://input');
-$data = json_decode($json_data, true);
+$imageData = file_get_contents('php://input');
+$imageData = base64_decode($imageData);
 
 // Check if image data is present
-if (!isset($data['image']) || empty($data['image'])) {
+if (!isset($imageData) || empty($imageData)) {
     echo json_encode([
         'success' => false,
         'error' => 'No image data received'
@@ -27,11 +27,8 @@ if (!file_exists($upload_dir)) {
 $filename = 'image_' . date('Ymd_His') . '_' . uniqid() . '.jpg';
 $filepath = $upload_dir . $filename;
 
-// Decode the base64 image data
-$image_data = base64_decode($data['image']);
-
 // Save the image
-if (file_put_contents($filepath, $image_data)) {
+if (file_put_contents($filepath, $imageData)) {
     echo json_encode([
         'success' => true,
         'filename' => $filename,
