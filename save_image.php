@@ -30,7 +30,7 @@ $filepath = $upload_dir . $filename;
 // Save the image
 if (file_put_contents($filepath, $imageData)) {
     http_response_code(201); // Created
-    echo json_encode(['success' => true, 'file_name'=>$filepath, 'error' => '' ]);
+    echo json_encode(['success' => true, 'fileName'=>$filepath, 'error' => '' ]);
 } else {
     http_response_code(500); // Server error
     echo json_encode(['success' => false,'error' => 'Failed to save image' ]);
