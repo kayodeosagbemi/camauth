@@ -1,224 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camera App</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            text-align: center;
-        }
-
-        h1 {
-            color: #333;
-        }
-
-        #camera-container {
-            position: relative;
-            width: 100%;
-            max-width: 640px;
-            margin: 20px auto;
-            border: 1px solid #ccc;
-            background-color: #f0f0f0;
-        }
-
-        #video {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        #canvas {
-            display: none;
-        }
-
-        .button-container {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-        }
-
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-
-        #cancelBtn {
-            background-color: #f44336;
-        }
-
-        #cancelBtn:hover {
-            background-color: #d32f2f;
-        }
-
-        #message {
-            margin-top: 20px;
-            color: #4CAF50;
-        }
-
-        .hidden {
-            display: none;
-        }
-    </style>
-</head>
-<body>
-    <h1>Camera App</h1>
-    
-    <div id="camera-container">
-        <video id="video" autoplay playsinline></video>
-        <canvas id="canvas"></canvas>
-    </div>
-    
-    <div class="button-container">
-        <button id="takePhotoBtn">Take Photo</button>
-        <button id="cancelBtn">Cancel</button>
-    </div>
-    
-    <p id="message"></p>
-
-    <script>
-        class CameraApp {
-            constructor() {
-                this.video = document.getElementById('video');
-                this.canvas = document.getElementById('canvas');
-                this.takePhotoBtn = document.getElementById('takePhotoBtn');
-                this.cancelBtn = document.getElementById('cancelBtn');
-                this.message = document.getElementById('message');
-                this.stream = null;
-                this.cameraOn = false;
-
-                this.init();
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Camera App</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+                text-align: center;
             }
 
-            init() {
-                // Set up event listeners
-                this.takePhotoBtn.addEventListener('click', () => this.takePhoto());
-                this.cancelBtn.addEventListener('click', () => this.toggleCamera());
-
-                // Start camera
-                this.startCamera();
+            h1 {
+                color: #333;
             }
 
-            async startCamera() {
-                try {
-                    const constraints = {
-                        video: { 
-                            facingMode: 'user',
-                            width: { ideal: 1280 },
-                            height: { ideal: 720 }
-                        }
-                    };
-
-                    this.stream = await navigator.mediaDevices.getUserMedia(constraints);
-                    this.video.srcObject = this.stream;
-                    this.cameraOn = true;
-                    this.takePhotoBtn.disabled = false;
-                    this.cancelBtn.textContent = 'Cancel';
-                    this.message.textContent = 'Camera is ready';
-                } catch (error) {
-                    console.error('Error accessing camera:', error);
-                    this.message.textContent = `Error accessing camera: ${error.message}`;
-                    this.message.style.color = 'red';
-                }
+            #camera-container {
+                position: relative;
+                width: 100%;
+                max-width: 640px;
+                margin: 20px auto;
+                border: 1px solid #ccc;
+                background-color: #f0f0f0;
             }
 
-            stopCamera() {
-                if (this.stream) {
-                    this.stream.getTracks().forEach(track => track.stop());
+            #video {
+                width: 100%;
+                height: auto;
+                display: block;
+            }
+
+            #canvas {
+                display: none;
+            }
+
+            .button-container {
+                display: flex;
+                justify-content: space-around;
+                margin-top: 20px;
+            }
+
+            button {
+                padding: 10px 20px;
+                font-size: 16px;
+                cursor: pointer;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 4px;
+            }
+
+            button:hover {
+                background-color: #45a049;
+            }
+
+            button:disabled {
+                background-color: #cccccc;
+                cursor: not-allowed;
+            }
+
+            #cancelBtn {
+                background-color: #f44336;
+            }
+
+            #cancelBtn:hover {
+                background-color: #d32f2f;
+            }
+
+            #message {
+                margin-top: 20px;
+                color: #4CAF50;
+            }
+
+            .hidden {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Camera App</h1>
+
+        <div id="camera-container">
+            <video id="video" autoplay playsinline></video>
+            <canvas id="canvas"></canvas>
+        </div>
+
+        <div class="button-container">
+            <button id="takePhotoBtn">Take Photo</button>
+            <button id="cancelBtn">Cancel</button>
+        </div>
+
+        <p id="message"></p>
+
+        <script>
+            class CameraApp {
+                constructor() {
+                    this.video = document.getElementById('video');
+                    this.canvas = document.getElementById('canvas');
+                    this.takePhotoBtn = document.getElementById('takePhotoBtn');
+                    this.cancelBtn = document.getElementById('cancelBtn');
+                    this.message = document.getElementById('message');
                     this.stream = null;
-                }
-                this.video.srcObject = null;
-                this.cameraOn = false;
-                this.takePhotoBtn.disabled = true;
-                this.cancelBtn.textContent = 'Turn on';
-                this.message.textContent = 'Camera is off';
-            }
+                    this.cameraOn = false;
 
-            toggleCamera() {
-                if (this.cameraOn) {
-                    this.stopCamera();
-                } else {
+                    this.init();
+                }
+
+                init() {
+                    // Set up event listeners
+                    this.takePhotoBtn.addEventListener('click', () => this.takePhoto());
+                    this.cancelBtn.addEventListener('click', () => this.toggleCamera());
+
+                    // Start camera
                     this.startCamera();
                 }
+
+                async startCamera() {
+                    try {
+                        const constraints = {
+                            video: {
+                                facingMode: 'user',
+                                width: {ideal: 1280},
+                                height: {ideal: 720}
+                            }
+                        };
+
+                        this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+                        this.video.srcObject = this.stream;
+                        this.cameraOn = true;
+                        this.takePhotoBtn.disabled = false;
+                        this.cancelBtn.textContent = 'Cancel';
+                        this.message.textContent = 'Camera is ready';
+                    } catch (error) {
+                        console.error('Error accessing camera:', error);
+                        this.message.textContent = `Error accessing camera: ${error.message}`;
+                        this.message.style.color = 'red';
+                    }
+                }
+
+                stopCamera() {
+                    if (this.stream) {
+                        this.stream.getTracks().forEach(track => track.stop());
+                        this.stream = null;
+                    }
+                    this.video.srcObject = null;
+                    this.cameraOn = false;
+                    this.takePhotoBtn.disabled = true;
+                    this.cancelBtn.textContent = 'Turn on';
+                    this.message.textContent = 'Camera is off';
+                }
+
+                toggleCamera() {
+                    if (this.cameraOn) {
+                        this.stopCamera();
+                    } else {
+                        this.startCamera();
+                    }
+                }
+
+                takePhoto() {
+                    if (!this.cameraOn)
+                        return;
+
+                    const context = this.canvas.getContext('2d');
+                    const width = this.video.videoWidth;
+                    const height = this.video.videoHeight;
+
+                    // Set canvas dimensions to match video
+                    this.canvas.width = width;
+                    this.canvas.height = height;
+
+                    // Draw video frame to canvas
+                    context.drawImage(this.video, 0, 0, width, height);
+
+                    // Get image data as base64
+                    const imageData = this.canvas.toDataURL('image/jpeg');
+
+                    // Send to server
+                    this.uploadImage(imageData);
+                }
+
+                uploadImage(imageData) {
+                        // Remove the data URL prefix to get just the base64 data
+                        const base64Data = imageData.replace(/^data:image\/jpeg;base64,/, '');
+                        console.debug(imageData);
+
+                        fetch('save_image.php', {
+                                method: 'POST',
+                                headers: {
+                                        'Content-Type': 'application/octet-stream' // Change the content type to octet-stream
+                                },
+                                body: base64Data // Send the base64 data directly
+                        })
+                        .then(response => {
+                        // Check if the response is ok (status in the range 200-299)
+                        if (!response.ok) {
+                          throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        // Parse the JSON response
+                        return response.json();
+                      })
+                      .then(jsonResponse => {
+                        // Handle the JSON response
+                        console.log('Success:', jsonResponse);
+
+                        if (jsonResponse.success) {
+                            this.message.textContent = `Successfully Saved Picture.`;
+                            this.message.style.color = 'blue';
+                            console.log('Operation completed successfully! File name is ' + jsonResponse.fileName);
+                        } else {
+                            console.log('Operation failed:', jsonResponse.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error uploading image:', error);
+                        this.message.textContent = `Error uploading image: ${error.message}`;
+                        this.message.style.color = 'red';
+                    });
+                }
             }
 
-            takePhoto() {
-                if (!this.cameraOn) return;
-
-                const context = this.canvas.getContext('2d');
-                const width = this.video.videoWidth;
-                const height = this.video.videoHeight;
-
-                // Set canvas dimensions to match video
-                this.canvas.width = width;
-                this.canvas.height = height;
-
-                // Draw video frame to canvas
-                context.drawImage(this.video, 0, 0, width, height);
-
-                // Get image data as base64
-                const imageData = this.canvas.toDataURL('image/jpeg');
-                
-                // Send to server
-                this.uploadImage(imageData);
-            }
-
-            
-            uploadImage(imageData) {
-                // Remove the data URL prefix to get just the base64 data
-                const base64Data = imageData.replace(/^data:image\/jpeg;base64,/, '');
-                console.debug(imageData);
-
-                fetch('save_image.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/octet-stream' // Change the content type to octet-stream
-                    },
-                    body: base64Data // Send the base64 data directly
-                })
-                .then(response => {
-                const jsonnval = response.json();
-                console.log(jsonnval);
-            })
-                .then(data => {
-                    if (data.success) {
-                        this.message.textContent = `Photo saved successfully: ${data.filename}`;
-                        this.message.style.color = '#4CAF50';
-                    } else {
-                        this.message.textContent = `Error saving photo: ${data.error}`;
-                        this.message.style.color = 'red';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error uploading image:', error);
-                    this.message.textContent = `Error uploading image: ${error.message}`;
-                    this.message.style.color = 'red';
-                });
-            }
-        }
-
-        // Initialize the app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            const app = new CameraApp();
-        });
-    </script>
-</body>
+            // Initialize the app when DOM is loaded
+            document.addEventListener('DOMContentLoaded', () => {
+                const app = new CameraApp();
+            });
+        </script>
+    </body>
 </html>
